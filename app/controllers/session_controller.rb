@@ -619,8 +619,8 @@ class SessionController < ApplicationController
       return render_json_error(I18n.t("login.reset_not_allowed_from_ip_address"))
     end
 
-    RateLimiter.new(nil, "forgot-password-hr-#{request.remote_ip}", 6, 1.hour).performed!
-    RateLimiter.new(nil, "forgot-password-min-#{request.remote_ip}", 3, 1.minute).performed!
+    # RateLimiter.new(nil, "forgot-password-hr-#{request.remote_ip}", 6, 1.hour).performed!
+    # RateLimiter.new(nil, "forgot-password-min-#{request.remote_ip}", 3, 1.minute).performed!
 
     user =
       if SiteSetting.hide_email_address_taken && !current_user&.staff?
