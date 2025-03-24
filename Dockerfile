@@ -2,10 +2,10 @@
 FROM bitnami/discourse:latest
 
 # Set working directory
-WORKDIR /opt/bitnami/discourse
+WORKDIR /opt/bitnami
 
-# Remove existing files to avoid conflicts
-RUN rm -rf /opt/bitnami/discourse/*
+# Remove existing Discourse directory completely
+RUN rm -rf /opt/bitnami/discourse && mkdir -p /opt/bitnami/discourse
 
 # Clone your modified Discourse version
 RUN git clone https://github.com/Prodigysec/discourse.git /opt/bitnami/discourse
