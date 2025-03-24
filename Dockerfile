@@ -1,8 +1,8 @@
-# Use the official Discourse base image
+# Use the official Bitnami Discourse base image
 FROM bitnami/discourse:latest
 
 # Set working directory
-WORKDIR /var/www/discourse
+WORKDIR /opt/bitnami/discourse
 
 # Clone your modified Discourse version
 RUN git clone https://github.com/Prodigysec/discourse.git .
@@ -10,14 +10,15 @@ RUN git clone https://github.com/Prodigysec/discourse.git .
 # Install required system dependencies
 RUN apt-get update && apt-get install -y redis-server postgresql-client imagemagick
 
-# Ensure correct Ruby version
-RUN rbenv install 3.3.0 && rbenv global 3.3.0
+# Remove rbenv-related lines (Bitnami already provides Ruby)
+# Ensure the correct Ruby version (check `ruby -v` after build)
+RUN ruby -v
 
-# Create a discourse user
-RUN useradd -m discourse && chown -R discourse:discourse /var/www/discourse
+# Set proper ownership for Discourse files
+RUN chown -R bitnami:bitnami /opt/bitnami/discourse
 
-# Switch to discourse user
-USER discourse
+# Switch to bitnami user (used by Bitnami Discourse image)
+USER bitnami
 
 # Install Ruby gems
 RUN bundle config set deployment 'true' && bundle config set without 'test development' && bundle install
@@ -25,14 +26,8 @@ RUN bundle config set deployment 'true' && bundle config set without 'test devel
 # Precompile assets
 RUN RAILS_ENV=production bundle exec rake assets:precompile
 
-# Switch back to root to copy startup script
-USER root
-COPY startup.sh /startup.sh
-RUN chmod +x /startup.sh
-
 # Expose default Discourse port
 EXPOSE 3000
 
-# Start Discourse
-CMD ["/startup.sh"]
-
+# Start Discourse (Bitnami’s start script)
+CMD ["/opt/bitnami/scripts/discourse/run.sh"]
