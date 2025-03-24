@@ -1,33 +1,47 @@
-# Use the official Discourse base image
-FROM discourse/base:latest
+# Use Ubuntu 18.04 as required for Discourse
+FROM ubuntu:18.04
 
-# Install dependencies
+# Set non-interactive mode for automated installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update system and install dependencies
 RUN apt-get update && apt-get install -y \
+    wget curl git sudo \
+    build-essential libssl-dev libreadline-dev zlib1g-dev \
+    libsqlite3-dev sqlite3 \
+    postgresql postgresql-contrib \
     redis-server \
-    postgresql \
-    postgresql-contrib \
-    imagemagick
+    imagemagick \
+    nodejs npm \
+    && apt-get clean
 
-# Start PostgreSQL and create the database
+# Enable memory overcommit for Redis
+RUN echo "vm.overcommit_memory = 1" >> /etc/sysctl.conf && \
+    sysctl -w vm.overcommit_memory=1
+
+# Install Rails and Ruby
+RUN bash <(wget -qO- https://raw.githubusercontent.com/discourse/install-rails/master/linux)
+
+# Clone Discourse
+RUN git clone https://github.com/discourse/discourse.git /home/discourse
+
+# Set working directory
+WORKDIR /home/discourse
+
+# Set up PostgreSQL role
 RUN service postgresql start && \
-    sudo -u postgres createuser -s discourse && \
-    sudo -u postgres createdb discourse -O discourse
+    sudo -u postgres createuser -s root
 
-# Set Discourse directory
-WORKDIR /var/www/discourse
+# Install required gems
+RUN source ~/.bashrc && bundle install
 
-# Clone the Discourse repository
-RUN git clone https://github.com/discourse/discourse.git .
+# Setup and migrate database
+RUN bundle exec rake db:create && \
+    bundle exec rake db:migrate && \
+    RAILS_ENV=test bundle exec rake db:create db:migrate
 
-# Install gems and dependencies
-RUN bundle install --deployment --without test development
-
-# Precompile assets (optional for speed)
-RUN RAILS_ENV=production bundle exec rake assets:precompile
-
-# Expose the default Discourse port
-EXPOSE 3000
-
-# Start services and Discourse
-CMD service postgresql start && redis-server & \
-    bundle exec rails server -b 0.0.0.0 -p 3000 -e production
+# Start Redis, PostgreSQL, and Discourse on container start
+CMD sysctl -w vm.overcommit_memory=1 && \
+    service postgresql start && \
+    redis-server --daemonize yes && \
+    bundle exec rails server -b 0.0.0.0
