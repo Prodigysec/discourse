@@ -29,13 +29,17 @@ RUN ruby -v
 # Switch to root user
 USER root
 
-# Install gems in a writable directory
-RUN mkdir -p /tmp/vendor/bundle && \
-    bundle config set --local deployment 'true' && \
-    bundle config set --local without 'test development' && \
-    bundle install --path /tmp/vendor/bundle
+# Set working directory to ensure Gemfile is found
+WORKDIR /opt/bitnami/discourse
 
-# Symlink the bundle directory to Discourse's expected path
+# Ensure the directory exists before installing gems
+RUN mkdir -p /tmp/vendor/bundle && \
+    bundle config set path '/tmp/vendor/bundle' && \
+    bundle config set deployment 'true' && \
+    bundle config set without 'test development' && \
+    bundle install
+
+# Symlink the bundle directory so Discourse can find it
 RUN ln -s /tmp/vendor/bundle /opt/bitnami/discourse/vendor/bundle
 
 # Switch back to bitnami user
