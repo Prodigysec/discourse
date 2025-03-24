@@ -29,6 +29,7 @@ RUN mkdir -p /tmp/vendor/bundle && \
     bundle config set --global path '/tmp/vendor/bundle' && \
     bundle config set --global deployment 'true' && \
     bundle config set --global without 'test development' && \
+    rbenv install 3.3.0 && rbenv global 3.3.0 && \
     bundle install
 
 # Symlink the bundle directory so Discourse can find it
