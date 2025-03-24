@@ -17,11 +17,11 @@ RUN apt-get update && apt-get install -y redis-server postgresql-client imagemag
 # Ensure the correct Ruby version (check `ruby -v` after build)
 RUN ruby -v
 
-# Set proper ownership for Discourse files
-RUN chown -R bitnami:bitnami /opt/bitnami/discourse
+# Set correct ownership for Discourse files
+RUN chown -R daemon:daemon /opt/bitnami/discourse
 
-# Switch to bitnami user (used by Bitnami Discourse image)
-USER bitnami
+# Switch to daemon user (Bitnami default)
+USER daemon
 
 # Install Ruby gems
 RUN bundle config set deployment 'true' && bundle config set without 'test development' && bundle install
