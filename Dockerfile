@@ -1,5 +1,5 @@
 # Use Ubuntu 18.04 as required for Discourse
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 
 # Set non-interactive mode for automated installation
 ENV DEBIAN_FRONTEND=noninteractive
@@ -12,11 +12,10 @@ RUN apt-get update && apt-get install -y \
     postgresql postgresql-contrib \
     redis-server \
     imagemagick \
-    nodejs \
-    node-gyp \
-    npm \
+    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g npm@latest \
     && apt-get clean
-
 
 # Enable memory overcommit for Redis
 RUN echo "vm.overcommit_memory = 1" >> /etc/sysctl.conf && \
