@@ -23,7 +23,7 @@ RUN echo "vm.overcommit_memory = 1" >> /etc/sysctl.conf && \
 RUN bash <(wget -qO- https://raw.githubusercontent.com/discourse/install-rails/master/linux)
 
 # Clone Discourse
-RUN git clone https://github.com/discourse/discourse.git /home/discourse
+RUN git clone https://github.com/Prodigysec/discourse.git /home/discourse
 
 # Set working directory
 WORKDIR /home/discourse
