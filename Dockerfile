@@ -8,7 +8,7 @@ WORKDIR /opt/bitnami/discourse
 RUN rm -rf /opt/bitnami/discourse/*
 
 # Clone your modified Discourse version
-RUN git clone https://github.com/Prodigysec/discourse.git .
+RUN git clone https://github.com/Prodigysec/discourse.git /opt/bitnami/discourse
 
 # Install required system dependencies
 RUN apt-get update && apt-get install -y redis-server postgresql-client imagemagick
