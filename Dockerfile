@@ -13,11 +13,16 @@ RUN rm -rf /opt/bitnami/discourse && mkdir -p /opt/bitnami/discourse
 # Clone your modified Discourse version
 RUN git clone https://github.com/Prodigysec/discourse.git /opt/bitnami/discourse
 
+# Set working directory inside Discourse
+WORKDIR /opt/bitnami/discourse
+
+# Verify that the Gemfile exists (for debugging)
+RUN ls -l /opt/bitnami/discourse/Gemfile || echo "Gemfile not found!"
+
 # Install required system dependencies
 RUN apt-get update && apt-get install -y redis-server postgresql-client imagemagick
 
-# Remove rbenv-related lines (Bitnami already provides Ruby)
-# Ensure the correct Ruby version (check `ruby -v` after build)
+# Print Ruby version for debugging
 RUN ruby -v
 
 # Set correct ownership for Discourse files
@@ -25,12 +30,6 @@ RUN ruby -v
 
 # Switch to daemon user (Bitnami default)
 # USER daemon
-
-# Switch to root user
-USER root
-
-# Set working directory to ensure Gemfile is found
-WORKDIR /opt/bitnami/discourse
 
 # Ensure the directory exists before installing gems
 RUN mkdir -p /tmp/vendor/bundle && \
@@ -42,13 +41,10 @@ RUN mkdir -p /tmp/vendor/bundle && \
 # Symlink the bundle directory so Discourse can find it
 RUN ln -s /tmp/vendor/bundle /opt/bitnami/discourse/vendor/bundle
 
-# Switch back to bitnami user
-USER bitnami
-
 # Install Ruby gems
 RUN bundle config set --local deployment 'true' && \
     bundle config set --local without 'test development' && \
-    bundle install --path vendor/bundle
+    bundle install
 
 # Precompile assets
 RUN RAILS_ENV=production bundle exec rake assets:precompile
