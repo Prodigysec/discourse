@@ -1,5 +1,5 @@
 # Use the official Discourse base image
-FROM discourse/base:latest
+FROM bitnami/discourse:latest
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
