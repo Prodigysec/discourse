@@ -29,10 +29,14 @@ RUN ruby -v
 # Switch to root user
 USER root
 
-# Ensure correct ownership and permissions
-RUN mkdir -p /opt/bitnami/discourse && \
-    chown -R bitnami:bitnami /opt/bitnami/discourse && \
-    chmod -R 777 /opt/bitnami/discourse
+# Install gems in a writable directory
+RUN mkdir -p /tmp/vendor/bundle && \
+    bundle config set --local deployment 'true' && \
+    bundle config set --local without 'test development' && \
+    bundle install --path /tmp/vendor/bundle
+
+# Symlink the bundle directory to Discourse's expected path
+RUN ln -s /tmp/vendor/bundle /opt/bitnami/discourse/vendor/bundle
 
 # Switch back to bitnami user
 USER bitnami
