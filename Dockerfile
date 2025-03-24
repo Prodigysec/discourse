@@ -27,7 +27,11 @@ RUN chown -R daemon:daemon /opt/bitnami/discourse
 USER daemon
 
 # Install Ruby gems
-RUN mkdir -p $BUNDLE_USER_CONFIG && bundle config set deployment 'true' && bundle config set without 'test development' && bundle install --path vendor/bundle
+RUN mkdir -p /opt/bitnami/discourse/.bundle && \
+    touch /opt/bitnami/discourse/.bundle/config && \
+    bundle config set --local deployment 'true' && \
+    bundle config set --local without 'test development' && \
+    bundle install --path vendor/bundle
 
 # Precompile assets
 RUN RAILS_ENV=production bundle exec rake assets:precompile
