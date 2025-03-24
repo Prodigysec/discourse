@@ -20,7 +20,9 @@ RUN ls -l /opt/bitnami/discourse/Gemfile || echo "Gemfile not found!"
 RUN apt-get update && apt-get install -y redis-server postgresql-client imagemagick
 
 # Fix permissions for Bundler directory
-RUN chown -R discourse:discourse /opt/bitnami/discourse/.bundle || chown -R root:root /opt/bitnami/discourse/.bundle
+# RUN chown -R discourse:discourse /opt/bitnami/discourse/.bundle || chown -R root:root /opt/bitnami/discourse/.bundle
+RUN mkdir -p /opt/bitnami/discourse/.bundle && chown -R discourse:discourse /opt/bitnami/discourse/.bundle
+
 
 # Install Ruby gems (without setting BUNDLE_USER_CONFIG)
 RUN mkdir -p /tmp/vendor/bundle && \
