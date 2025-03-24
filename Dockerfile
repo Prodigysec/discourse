@@ -14,7 +14,7 @@ WORKDIR /var/www/discourse
 RUN git clone https://github.com/Prodigysec/discourse.git .
 
 # Install gems and dependencies
-RUN bundle install --deployment --without test development
+RUN bundle config set deployment 'true' && bundle config set without 'test development' && bundle install
 
 # Precompile assets for faster performance
 RUN RAILS_ENV=production bundle exec rake assets:precompile
