@@ -30,15 +30,15 @@ RUN ruby -v
 USER root
 
 # Ensure correct ownership and permissions
-RUN chown -R bitnami:bitnami /opt/bitnami && chmod -R 777 /opt/bitnami
+RUN mkdir -p /opt/bitnami/discourse && \
+    chown -R bitnami:bitnami /opt/bitnami/discourse && \
+    chmod -R 777 /opt/bitnami/discourse
 
 # Switch back to bitnami user
 USER bitnami
 
 # Install Ruby gems
-RUN rm -rf /opt/bitnami/discourse/.bundle && \
-    mkdir -p /opt/bitnami/discourse && \
-    bundle config set --local deployment 'true' && \
+RUN bundle config set --local deployment 'true' && \
     bundle config set --local without 'test development' && \
     bundle install --path vendor/bundle
 
