@@ -27,7 +27,8 @@ RUN chown -R daemon:daemon /opt/bitnami/discourse
 USER daemon
 
 # Install Ruby gems
-RUN rm -rf /opt/bitnami/discourse/.bundle && \
+RUN chmod -R 777 /opt/bitnami && \
+    rm -rf /opt/bitnami/discourse/.bundle && \
     mkdir -p /opt/bitnami/discourse && \
     bundle config set --local deployment 'true' && \
     bundle config set --local without 'test development' && \
