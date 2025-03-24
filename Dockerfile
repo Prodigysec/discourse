@@ -12,8 +12,11 @@ RUN apt-get update && apt-get install -y \
     postgresql postgresql-contrib \
     redis-server \
     imagemagick \
-    nodejs npm \
+    nodejs \
+    node-gyp \
+    npm \
     && apt-get clean
+
 
 # Enable memory overcommit for Redis
 RUN echo "vm.overcommit_memory = 1" >> /etc/sysctl.conf && \
